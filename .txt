@@ -1,0 +1,4 @@
+email cases checks !
+min length for password
+admin role can't be sent on req body
+use phone auth using npm package

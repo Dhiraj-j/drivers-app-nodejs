@@ -1,0 +1,32 @@
+{
+  "name": "driver_app_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "migrate": "node src/utils/associations.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.7",
+    "nodemon": "^3.0.1",
+    "pg": "^8.11.3",
+    "rapidjet": "^1.0.6",
+    "sequelize": "^6.37.1",
+    "socket.io": "^4.7.5",
+    "twilio": "^4.19.0",
+    "ws": "^8.14.2"
+  }
+}
