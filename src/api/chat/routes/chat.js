@@ -11,7 +11,7 @@ router.get("/api/chats", [], getUsersChat);
 
 // List Single chat
 router.get("/api/chats/:id", [], findOne);
-router.get("/api/chats/:id/messaages", [], getUsersChatMessaages);
+router.get("/api/chats/:id/messages", [], getUsersChatMessaages);
 
 // Update chats
 router.put("/api/chats/:id", [], update);

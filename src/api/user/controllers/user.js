@@ -16,6 +16,7 @@ export const create = async (req, res) => {
     try {
         const body = req.body;
         const { email, phone } = body;
+        console.log(email)
         const isUserExists = await User.findOne({
             where: {
                 [Op.or]: [{ email: email }, { phone: phone }]

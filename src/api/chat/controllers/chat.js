@@ -73,6 +73,7 @@ export const getUsersChat = async (req, res) => {
 export const getUsersChatMessaages = async (req, res) => {
     try {
         const { id } = req.params;
+
         const messages = await Message.findAll({
             where: { ChatId: id },
             include: [{ model: User, as: "sender", "attributes": ["name"] }]

@@ -18,7 +18,7 @@ Otp.belongsTo(User, { foreignKey: "UserId", as: "user" })
 User.belongsToMany(Chat, { as: "chats", through: "UserChat", foreignKey: "UserId" })
 Chat.belongsToMany(User, { as: "users", through: "UserChat", foreignKey: "ChatId" })
 Chat.hasMany(Message, { as: "messages", foreignKey: "ChatId" })
-Message.belongsTo(Chat, { foreignKey: "ChatId" })
+Message.belongsTo(Chat, { foreignKey: "ChatId", as: "chat" })
 Message.belongsTo(User, { foreignKey: "UserId", as: "sender" })
 // syncing tables 
 sequelize.sync({ alter: true }).then(() => {

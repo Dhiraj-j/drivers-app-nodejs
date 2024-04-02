@@ -8,7 +8,7 @@ export const createRequest = async (req, res, next) => {
     "name": Joi.string().required(),
     "email": Joi.string().required(),
     "phone": Joi.string().required(),
-    "password": Joi.string().required(),
+    "password": Joi.string().min(6).required(),
     "Role": Joi.string().valid(...Object.values(user_types)).optional(),
   });
 
@@ -20,7 +20,7 @@ export const createRequest = async (req, res, next) => {
       details: result.error.details
     }));
   }
-
+  req.body.email = req.body.email.toLowerCase();
   next();
 }
 export const updateRequest = async (req, res, next) => {
@@ -45,7 +45,7 @@ export const updateRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
-
+  req.body.email = req.body.email.toLowerCase();
   if (result.error) {
     return res.status(400).send(errorResponse({
       message: result.error.message,
@@ -64,6 +64,7 @@ export const loginRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
+  req.body.email = req.body.email.toLowerCase();
 
   if (result.error) {
     return res.status(400).send(errorResponse({
@@ -83,6 +84,7 @@ export const forgetRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
+  req.body.email = req.body.email.toLowerCase();
 
   if (result.error) {
     return res.status(400).send(errorResponse({
@@ -97,12 +99,13 @@ export const resetRequest = async (req, res, next) => {
     "email": Joi.string(),
     "phone": Joi.string(),
     "otp": Joi.number().required(),
-    password: Joi.string().required()
+    "password": Joi.string().min(6).required()
   }).xor("email", "phone").and("otp", "password").messages({
     'object.xor': 'Either an email or a phone number is acceptable along with the OTP.'
   });
 
   const result = JoiSchema.validate(req.body);
+  req.body.email = req.body.email.toLowerCase();
 
   if (result.error) {
     return res.status(400).send(errorResponse({
