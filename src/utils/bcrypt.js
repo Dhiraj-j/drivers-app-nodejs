@@ -1,7 +1,7 @@
-import { hash as _hash, compare as _compare } from "bcrypt";
+import bcrypt from "bcrypt";
 export async function hash(data) {
     try {
-        const hash = _hash(data, 10);
+        const hash = await bcrypt.hash(data, 10);
         return hash;
     } catch (error) {
         console.log(error);
@@ -10,8 +10,7 @@ export async function hash(data) {
 }
 export async function compare(string, hashString) {
     try {
-        const isMatched = await _compare(string, hashString);
-        console.log(isMatched);
+        const isMatched = await bcrypt.compare(string, hashString);
         return isMatched;
     } catch (error) {
         console.log(error);

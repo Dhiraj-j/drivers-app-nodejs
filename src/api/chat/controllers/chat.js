@@ -78,8 +78,8 @@ export const getUsersChatMessaages = async (req, res) => {
             where: { ChatId: id },
             include: [{ model: User, as: "sender", "attributes": ["name"] }]
         });
-
         return res.status(200).send({ data: messages });
+
     } catch (error) {
         console.log(error);
         return res.status(500).send(errorResponse({ status: 500, message: "Internal Server Error", details: error.message }));

@@ -15,12 +15,14 @@ export const createRequest = async (req, res, next) => {
   const result = JoiSchema.validate(req.body);
 
   if (result.error) {
-    return res.status(400).send(errorResponse({
-      message: result.error.message,
-      details: result.error.details
-    }));
+    return res.status(400).send({
+      status: "failure",
+      status_code: 400,
+      messages: result.error.message,
+      request_body: req.body
+    })
   }
-  req.body.email = req.body.email.toLowerCase();
+  req.body.email = req?.body?.email?.toLowerCase();
   next();
 }
 export const updateRequest = async (req, res, next) => {
@@ -45,12 +47,14 @@ export const updateRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
-  req.body.email = req.body.email.toLowerCase();
+  req.body.email = req?.body?.email?.toLowerCase();
   if (result.error) {
-    return res.status(400).send(errorResponse({
-      message: result.error.message,
-      details: result.error.details
-    }));
+    return res.status(400).send({
+      status: "failure",
+      status_code: 400,
+      messages: result.error.message,
+      request_body: req.body
+    })
   }
 
   next();
@@ -64,13 +68,15 @@ export const loginRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
-  req.body.email = req.body.email.toLowerCase();
+  req.body.email = req?.body?.email?.toLowerCase();
 
   if (result.error) {
-    return res.status(400).send(errorResponse({
-      message: result.error.message,
-      details: result.error.details
-    }));
+    return res.status(400).send({
+      status: "failure",
+      status_code: 400,
+      messages: result.error.message,
+      request_body: req.body
+    })
   }
 
   next();
@@ -84,13 +90,15 @@ export const forgetRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
-  req.body.email = req.body.email.toLowerCase();
+  req.body.email = req?.body?.email?.toLowerCase();
 
   if (result.error) {
-    return res.status(400).send(errorResponse({
-      message: result.error.message,
-      details: result.error.details
-    }));
+    return res.status(400).send({
+      status: "failure",
+      status_code: 400,
+      messages: result.error.message,
+      request_body: req.body
+    })
   }
   next();
 }
@@ -105,13 +113,15 @@ export const resetRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
-  req.body.email = req.body.email.toLowerCase();
+  req.body.email = req?.body?.email?.toLowerCase();
 
   if (result.error) {
-    return res.status(400).send(errorResponse({
-      message: result.error.message,
-      details: result.error.details
-    }));
+    return res.status(400).send({
+      status: "failure",
+      status_code: 400,
+      messages: result.error.message,
+      request_body: req.body
+    })
   }
   next();
 }

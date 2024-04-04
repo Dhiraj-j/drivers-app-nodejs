@@ -16,7 +16,6 @@ export const create = async (req, res) => {
     try {
         const body = req.body;
         const { email, phone } = body;
-        console.log(email)
         const isUserExists = await User.findOne({
             where: {
                 [Op.or]: [{ email: email }, { phone: phone }]
@@ -26,9 +25,13 @@ export const create = async (req, res) => {
             const matching_value = Object.entries(isUserExists.dataValues).find(
                 ([key, value]) => value === email || value === phone
             );
-            return res.status(409).send(errorResponse({
+            return res.status(409).send({
+                status_code: 409,
+                status: "Failure",
                 message: `User Already Exists with the ${matching_value[0]} ${matching_value[1]}`,
-            }));
+                errors: `User Already Exists with the ${matching_value[0]} ${matching_value[1]}`,
+                request_body: req.body
+            })
         }
         // create user
         const user = await User.create(body, { attributes: ["id"] });
@@ -40,16 +43,21 @@ export const create = async (req, res) => {
             await Vehicle.bulkCreate(vehiclesArray)
         }
         return res.status(200).send({
-            data: {
-                name: user.name,
-                email: user.email,
-                phone: user.phone
-            },
-            message: "User Created!"
+            status: "sucess",
+            status_code: 200,
+            message: "User Created",
+            more_info: null,
+            data: user,
+            request_body: req.body
         });
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(errorResponse({ status: 500, message: "Internal Server Error", details: error.message }));
+        return res.status(500).send({
+            status: "failure",
+            status_code: 500,
+            message: error.message,
+            errors: error,
+            request_body: req.body
+        });
     }
 };
 
@@ -68,10 +76,20 @@ export const find = async (req, res) => {
             where: whereClause
         });
         const meta = await getMeta(pagination, users.count);
-        return res.status(200).send({ data: users.rows, meta });
+        return res.status(200).send({
+            status: "success", status_code: 200,
+            data: users.rows,
+            meta: meta,
+            request_body: req.body
+        });
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(errorResponse({ status: 500, message: "Internal Server Error", details: error.message }));
+        return res.status(500).send({
+            status: "failure",
+            status_code: 500,
+            message: error.message,
+            errors: error,
+            request_body: req.body
+        });
     }
 };
 
@@ -82,12 +100,13 @@ export const findOne = async (req, res) => {
             attributes: { exclude: ["password"] }
         });
         if (!user) {
-            return res.status(404).send(errorResponse({ status: 404, message: "user not found!" }));
+            return res.status(404).send(({ status: "failure", message: "user not found!", status_code: 404, errors: "user not found" }));
         }
-        return res.status(200).send({ data: user });
+        return res.status(200).send({ status: "success", status_code: 200, data: user });
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(errorResponse({ status: 500, message: "Internal Server Error", details: error.message }));
+        return res.status(500).send({
+            status: "failure", status_code: 500, message: error.message, errors: error, request_body: req.body
+        });
     }
 };
 
@@ -97,14 +116,22 @@ export const update = async (req, res) => {
         const getUser = await User.findByPk(id);
 
         if (!getUser) {
-            return res.status(404).send(errorResponse({ message: "User Not found", details: "user id seems to be invalid" }));
+            return res.status(404).send({
+                status: "failure", status_code: 404,
+                message: "User Not found",
+                details: "user id seems to be invalid"
+            });
         }
-
         const [rowCount, [user]] = await User.update(req.body, { where: { id }, returning: true });
-        return res.status(200).send({ message: "user updated!", data: user });
+        return res.status(200).send({ status: "success", status_code: 200, message: "user updated!", data: user });
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(errorResponse({ status: 500, message: "Internal Server Error", details: error.message }));
+        return res.status(500).send({
+            status: "failure",
+            status_code: 500,
+            message: error.message,
+            errors: error,
+            request_body: req.body
+        });
     }
 };
 
@@ -114,14 +141,20 @@ export const destroy = async (req, res) => {
         const getUser = await User.findByPk(id);
 
         if (!getUser) {
-            return res.status(404).send(errorResponse({ message: "User Not found", details: "user id seems to be invalid" }));
+            return res.status(404).send({
+                status: "failure",
+                message: "user not found!",
+                status_code: 404,
+                errors: "user not found"
+            });
         }
 
         const user = User.destroy({ where: { id } });
-        return res.status(200).send({ message: "user deleted!" });
+        return res.status(200).send({ message: "user deleted!", status_code: 200, status: "success", errors: null });
     } catch (error) {
-        console.log(error);
-        return res.status(500).send(errorResponse({ status: 500, message: "Internal Server Error", details: error.message }));
+        return res.status(500).send({
+            status: "failure", status_code: 500, message: error.message, errors: error, request_body: req.body
+        });
     }
 };
 
@@ -129,15 +162,18 @@ export const getMe = async (req, res) => {
     try {
         const token = verify(req);
         if (token.error) {
-            return res.status(401).send(errorResponse({ status: 401, message: token.error.message }))
+            return res.status(401).send({
+                status: "failure",
+                status_code: 401,
+                message: token.error.message,
+            })
         }
         const user = await User.findByPk(token.id, {
             attributes: { exclude: ["password"] }
         })
-        return res.status(200).send({ data: user })
+        return res.status(200).send({ status_code: 200, status: "success", errors: null, data: user })
     } catch (error) {
-        console.log(error)
-        return res.status(500).send(errorResponse({ status: 500, message: error.message }))
+        return res.status(500).send({ status: "failure", status_code: 500, message: error.message, errors: error, request_body: req.body });
     }
 }
 
@@ -145,20 +181,35 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ where: { email } })
+
         if (!user) {
-            return res.status(400).send(errorResponse({ message: "No user found associated with email" }))
+            return res.status(404).send(({ status: "failure", message: "user not found!", status_code: 404, errors: "user not found" }));
         }
-        const isMatched = await compare(password, user.password)
+        const isMatched = await compare(password, user.dataValues.password)
         if (!isMatched) {
-            return res.status(400).send(errorResponse({ message: "Invalid user credential" }))
+            return res.status(400).send({
+                status: "failure",
+                status_code: 400,
+                message: "Credential Not Matched",
+                errors: "Invalid User Credentials",
+                request_body: req.body
+            })
         }
         const jwt = issue({ id: user.id })
-        return res.status(200).send({ data: { jwt }, message: "User Verified!" })
+        delete user.dataValues.password
+        return res.status(200).send({
+            status: "sucess",
+            status_code: 200, message: "login success",
+            data: { token: jwt, user }, request_body: req.body
+        })
     } catch (error) {
-        return res.status(500).send(errorResponse({
+        return res.status(500).send({
+            status: "failure",
+            status_code: 500,
             message: error.message,
-            status: 500
-        }))
+            errors: error,
+            request_body: req.body
+        });
     }
 }
 
@@ -175,9 +226,8 @@ export const forgetPassword = async (req, res) => {
         }
         const user = await User.findOne({ where: whereClause })
         if (!user) {
-            return res.status(404).send(errorResponse({ status: 404, message: `account not found!` }))
+            return res.status(400).send({ status: "failure", status_code: 400, message: "no account found!", errors: "No accound found with the given email", request_body: body });
         }
-
         const expiryTime = getDateTimeLater()
         const createOtp = await Otp.create({ otp: 123123, expires: expiryTime, UserId: user.dataValues.id })
         switch (sendMethod) {
@@ -196,12 +246,15 @@ export const forgetPassword = async (req, res) => {
                 break;
         }
 
-        return res.status(200).send({ message: `OTP has been sent to your ${body.email ? "email" : "phone"}!` })
+        return res.status(200).send({
+            status: "success",
+            status_code: 200,
+            message: `OTP has been sent to your ${body.email ? "email" : "phone"}!`,
+            request_body: req.body
+        })
     } catch (error) {
-        return res.status(500).send(errorResponse({
-            message: error.message,
-            status: 500
-        }))
+        return res.status(500).send({ status: "failure", status_code: 500, message: error.message, errors: error, request_body: req.body });
+
     }
 }
 
@@ -218,26 +271,35 @@ export const resetPassword = async (req, res) => {
         }
         const user = await User.findOne({ where: whereClause, include: ["otp"] })
         if (!user) {
-            return res.status(400).send(errorResponse({ message: "No user found associated with email" }))
+            return res.status(404).send({ status: "failure", status_code: 404, errors: "No user found", message: "No user found associated with email" })
         }
         if (!user.otp) {
-            return res.status(500).send(errorResponse({ message: "server error please regenerate" }))
+            return res.status(400).send({ status: "failure", status_code: 400, errors: "server error", message: "some internal server error occured" })
         }
         const isMatched = body.otp === user.otp.otp;
         if (!isMatched) {
-            return res.status(400).send(errorResponse({ message: "Invalid OTP" }))
+            return res.status(400).send({
+                status: "failure",
+                status_code: 400,
+                message: "Invalid Credentials"
+            })
         }
         const dateNow = getDateTime()
         if (!user.otp.expires > dateNow) {
-            return res.status(400).send(errorResponse({ message: "OTP Expired! please regenerate it" }))
+            return res.status(400).send({
+                status: "failure",
+                status_code: 400,
+                message: "OTP has been expired ! please regenerate it"
+            })
         }
         user.password = body.password;
         await user.save()
-        return res.status(200).send({ message: "Password has been updated!" })
+        return res.status(200).send({
+            message: "Password has been updated!", status: "success", status_code: 200, request_body: req.body
+        })
     } catch (error) {
-        return res.status(500).send(errorResponse({
-            message: error.message,
-            status: 500
-        }))
+        return res.status(500).send({
+            status: "failure", status_code: 500, message: error.message, errors: error, request_body: req.body
+        });
     }
 }
