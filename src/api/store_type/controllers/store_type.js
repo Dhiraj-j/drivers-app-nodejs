@@ -38,9 +38,14 @@ export const findOne = async (req, res) => {
         const { id } = req.params;
         const store_type = await Store_type.findByPk(id);
         if (!store_type) {
-            return res.status(404).send(errorResponse({ status: 404, message: "store_type not found!" }));
+            return res.status(404).send(responseHandler({
+                status_code: 404,
+                message: "store type not found!",
+                status: "failure",
+                request_body: req.body
+            }));
         }
-        return res.status(200).send({ data: store_type });
+        return res.status(200).send(responseHandler({ data: store_type, request_body: req.body, status: "success", status_code: 200 }));
     } catch (error) {
         console.log(error);
         return res.status(500).send(responseHandler({ status: "failer", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
@@ -53,11 +58,16 @@ export const update = async (req, res) => {
         const getStore_type = await Store_type.findByPk(id);
 
         if (!getStore_type) {
-            return res.status(400).send(errorResponse({ message: "Invalid ID" }));
+            return res.status(404).send(responseHandler({
+                status_code: 404,
+                message: "store type not found!",
+                status: "failure",
+                request_body: req.body
+            }));
         }
 
         const [rowCount, [store_type]] = await Store_type.update(req.body, { where: { id }, returning: true });
-        return res.status(200).send({ message: "store_type updated!", data: store_type });
+        return res.status(200).send(responseHandler({ status: "success", status_code: 200, request_body: req.body, data: store_type }));
     } catch (error) {
         console.log(error);
         return res.status(500).send(responseHandler({ status: "failer", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
@@ -70,7 +80,12 @@ export const destroy = async (req, res) => {
         const getStore_type = await Store_type.findByPk(id);
 
         if (!getStore_type) {
-            return res.status(400).send(errorResponse({ message: "Invalid ID" }));
+            return res.status(404).send(responseHandler({
+                status_code: 404,
+                message: "store type not found!",
+                status: "failure",
+                request_body: req.body
+            }));
         }
 
         const store_type = Store_type.destroy({ where: { id } });
