@@ -1,7 +1,7 @@
 
 import Joi from "joi";
 import { errorResponse } from "rapidjet"
-import { responseHandler } from "../../../utils/responseHandler";
+import { responseHandler } from "../../../utils/responseHandler.js";
 
 export const createRequest = async (req, res, next) => {
   const JoiSchema = Joi.object({
