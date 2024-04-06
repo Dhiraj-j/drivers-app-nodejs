@@ -4,8 +4,8 @@ import { errorResponse } from "rapidjet"
 
 export const createRequest = async (req, res, next) => {
   const JoiSchema = Joi.object({
-    "message": Joi.text(),
-    "isRead": Joi.boolean(),
+    "name": Joi.string().required(),
+    "description": Joi.string().optional(),
   });
 
   const result = JoiSchema.validate(req.body);

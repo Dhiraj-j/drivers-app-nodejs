@@ -2,7 +2,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../../../../database/index.js';
 
-const Restaurant = sequelize.define("Restaurant", {
+const Store = sequelize.define("Store", {
     name: {
         type: DataTypes.STRING,
     },
@@ -26,10 +26,9 @@ const Restaurant = sequelize.define("Restaurant", {
     },
     gallery: {
         type: DataTypes.ARRAY(DataTypes.STRING),
-        allowNull: true
     }
 });
 
-Restaurant.sync();
+Store.sync();
 
-export default Restaurant;
+export default Store;

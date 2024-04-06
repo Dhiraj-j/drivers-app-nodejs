@@ -11,17 +11,21 @@ const codeAndName = {
 };
 export function responseHandler({
     status_code = 400,
-    status = codeAndName[status_code],
+    status = status_code === 200 ? "success" : "failure",
     message = null,
     more_info = null,
-    errors = null
+    errors = null,
+    data = null,
+    request_body = null
 }) {
     return {
         status: status,
         status_code: status_code,
         message: message,
         more_info: more_info,
-        errors: errors
+        errors: errors,
+        data: data,
+        request_body: request_body
     }
 }
 

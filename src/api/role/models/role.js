@@ -2,15 +2,17 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../../../../database/index.js';
 
-const Category = sequelize.define("Category", {
+const Role = sequelize.define("Role",{
+        
     name: {
         type: DataTypes.STRING,
     },
     description: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
     }
 });
 
-Category.sync();
+Role.sync();
 
-export default Category;
+export default Role;
+          

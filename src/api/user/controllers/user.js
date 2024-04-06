@@ -8,8 +8,9 @@ import { compare } from "../../../utils/bcrypt.js";
 import Otp from "./../../otp/models/otp.js";
 import { getDateTime, getDateTimeLater } from "../../../utils/date.js";
 import mailSender from "../../../utils/email.js";
-import { sendSMS } from "../../../utils/twilio.js";
+import { sendSMS, verifySMS } from "../../../utils/twilio.js";
 import { user_types } from "../../../constants/user.js";
+import { responseHandler } from "../../../utils/responseHandler.js";
 
 
 export const create = async (req, res) => {
@@ -222,11 +223,18 @@ export const forgetPassword = async (req, res) => {
             whereClause.phone = body.phone;
         }
         if (body.hasOwnProperty("email")) {
-            whereClause.email = body.email;
+            whereClause.email = body?.email;
         }
+        console.log(whereClause)
         const user = await User.findOne({ where: whereClause })
         if (!user) {
-            return res.status(400).send({ status: "failure", status_code: 400, message: "no account found!", errors: "No accound found with the given email", request_body: body });
+            return res.status(400).send({
+                status: "failure",
+                status_code: 400,
+                message: "no account found!",
+                errors: "No accound found with the given details",
+                request_body: body
+            });
         }
         const expiryTime = getDateTimeLater()
         const createOtp = await Otp.create({ otp: 123123, expires: expiryTime, UserId: user.dataValues.id })
@@ -239,7 +247,16 @@ export const forgetPassword = async (req, res) => {
                 })
                 break;
             case "PHONE":
-                const sendOTPSMS = await sendSMS({ phone: user.dataValues.phone, text: `Hey! ${user.dataValues.name}  One Time Password (OTP) to reset your password is ${123123}` })
+                const sendOTPSMS = await sendSMS("+91" + user.dataValues.phone)
+                if (sendOTPSMS.error) {
+                    return res.status(500).send(responseHandler({
+                        status: "failure",
+                        status_code: 500,
+                        errors: sendOTPSMS.error,
+                        message: "some error occured",
+                        request_body: req.body
+                    }))
+                }
                 break;
 
             default:
@@ -262,6 +279,7 @@ export const resetPassword = async (req, res) => {
     try {
         const body = req.body;
         const whereClause = {};
+        const sendMethod = body.email ? "EMAIL" : "PHONE"
 
         if (body.hasOwnProperty("phone")) {
             whereClause.phone = body.phone;
@@ -270,33 +288,44 @@ export const resetPassword = async (req, res) => {
             whereClause.email = body.email;
         }
         const user = await User.findOne({ where: whereClause, include: ["otp"] })
-        if (!user) {
-            return res.status(404).send({ status: "failure", status_code: 404, errors: "No user found", message: "No user found associated with email" })
-        }
-        if (!user.otp) {
-            return res.status(400).send({ status: "failure", status_code: 400, errors: "server error", message: "some internal server error occured" })
-        }
-        const isMatched = body.otp === user.otp.otp;
-        if (!isMatched) {
-            return res.status(400).send({
-                status: "failure",
-                status_code: 400,
-                message: "Invalid Credentials"
+
+        if (sendMethod === "EMAIL") {
+            if (!user) {
+                return res.status(404).send({ status: "failure", status_code: 404, errors: "No user found", message: "No user found associated with email" })
+            }
+            if (!user.otp) {
+                return res.status(400).send({ status: "failure", status_code: 400, errors: "server error", message: "some internal server error occured" })
+            }
+            const isMatched = body.otp === user.otp.otp;
+            if (!isMatched) {
+                return res.status(400).send({
+                    status: "failure",
+                    status_code: 400,
+                    message: "Invalid Credentials"
+                })
+            }
+            const dateNow = getDateTime()
+            if (!user.otp.expires > dateNow) {
+                return res.status(400).send({
+                    status: "failure",
+                    status_code: 400,
+                    message: "OTP has been expired ! please regenerate it"
+                })
+            }
+            user.password = body.password;
+            await user.save()
+            return res.status(200).send({
+                message: "Password has been updated!", status: "success", status_code: 200, request_body: req.body
             })
+        } else {
+            const verify = await verifySMS("+91" + body.phone, body.otp)
+            if (verify.valid && verify.status === "approved") {
+                return res.status(200).send(responseHandler({ data: verify, status: "success", message: "password reset successfully", request_body: req.body, status_code: 200 }))
+            } else {
+                return res.status(200).send(responseHandler({ data: verify, status: "failure", message: verify.error, request_body: req.body, status_code: 400 }))
+            }
         }
-        const dateNow = getDateTime()
-        if (!user.otp.expires > dateNow) {
-            return res.status(400).send({
-                status: "failure",
-                status_code: 400,
-                message: "OTP has been expired ! please regenerate it"
-            })
-        }
-        user.password = body.password;
-        await user.save()
-        return res.status(200).send({
-            message: "Password has been updated!", status: "success", status_code: 200, request_body: req.body
-        })
+
     } catch (error) {
         return res.status(500).send({
             status: "failure", status_code: 500, message: error.message, errors: error, request_body: req.body

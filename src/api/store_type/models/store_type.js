@@ -2,7 +2,8 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../../../../database/index.js';
 
-const Category = sequelize.define("Category", {
+const Store_type = sequelize.define("Store_type", {
+
     name: {
         type: DataTypes.STRING,
     },
@@ -11,6 +12,6 @@ const Category = sequelize.define("Category", {
     }
 });
 
-Category.sync();
+Store_type.sync();
 
-export default Category;
+export default Store_type;

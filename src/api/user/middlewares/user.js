@@ -90,7 +90,7 @@ export const forgetRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
-  req.body.email = req?.body?.email?.toLowerCase();
+  if (req.body.email) req.body.email = req.body.email.toLowerCase();
 
   if (result.error) {
     return res.status(400).send({
@@ -113,7 +113,7 @@ export const resetRequest = async (req, res, next) => {
   });
 
   const result = JoiSchema.validate(req.body);
-  req.body.email = req?.body?.email?.toLowerCase();
+  if (req.body.email) req.body.email = req.body.email.toLowerCase();
 
   if (result.error) {
     return res.status(400).send({

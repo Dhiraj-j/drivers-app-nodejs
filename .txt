@@ -1,4 +1,12 @@
-email cases checks !
-min length for password
+
 admin role can't be sent on req body
 use phone auth using npm package
+
+Updated Response restructure
+Created Category Crud with validation
+Updated Postman Documentation
+Created Postman Documentation for Category
+
+Need To Verify By Client and Blocks
+Can grocery and drinks section have stores like resturants 
+Getting Twilio Error , Need number from which opts will be sent or registered on Twilio
