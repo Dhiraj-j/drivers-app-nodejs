@@ -3,6 +3,7 @@ import { getPagination, getMeta, errorResponse } from "rapidjet"
 import Store from "../models/store.js";
 import { request, response } from "express";
 import { responseHandler } from "../../../utils/responseHandler.js";
+import Store_type from "../../store_type/models/store_type.js";
 
 export const create = async (req, res) => {
     try {
@@ -16,19 +17,24 @@ export const create = async (req, res) => {
         }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failer", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
     }
 };
 
 export const find = async (req, res) => {
     try {
         const query = req.query;
+        const whereClause = {};
+        if (query.store_type) {
+            whereClause.name = query?.store_type?.toLowerCase()
+        }
         const stores = await Store.findAll({
+            include: [{ model: Store_type, as: "store_type", where: whereClause }]
         });
         return res.status(200).send(responseHandler({ status_code: 200, status: "success", data: stores, request_body: req.body }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failer", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
     }
 };
 
@@ -47,7 +53,7 @@ export const findOne = async (req, res) => {
         return res.status(200).send(responseHandler({ status: "success", status_code: 200, request_body: req.body, data: store }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failer", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
     }
 };
 
@@ -69,7 +75,7 @@ export const update = async (req, res) => {
         return res.status(200).send(responseHandler({ status: "success", status_code: 200, request_body: req.body, data: store }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failer", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
     }
 };
 
@@ -91,6 +97,6 @@ export const destroy = async (req, res) => {
         return res.status(200).send(responseHandler({ status: "success", status_code: 200, request_body: req.body, data: store }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failer", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
     }
 };

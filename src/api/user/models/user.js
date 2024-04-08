@@ -37,19 +37,14 @@ const User = sequelize.define("User", {
     blocked: {
         type: DataTypes.BOOLEAN,
     },
-    delete: {
-        type: DataTypes.BOOLEAN,
-    },
+
     notification_token: {
         type: DataTypes.STRING,
     },
     block_note: {
         type: DataTypes.TEXT,
     },
-    role: {
-        type: DataTypes.ENUM("ADMIN", "DRIVER", "CUSTOMER"),
-        defaultValue: "CUSTOMER"
-    },
+
     profile_image: {
         type: DataTypes.STRING,
         allowNull: true

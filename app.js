@@ -12,7 +12,8 @@ import category from './src/api/category/routes/category.js'
 import store_type from './src/api/store_type/routes/store_type.js'
 import store from './src/api/store/routes/store.js'
 import role from './src/api/role/routes/role.js'
-
+import packge from "./src/api/package/routes/package.js"
+import package_category from "./src/api/package_category/routes/package_category.js"
 import cors from 'cors'
 app.use(cors({
     origin: "http://localhost:5173",
@@ -31,4 +32,6 @@ app.use(category)
 app.use(store_type)
 app.use(store)
 app.use(role)
+app.use(packge)
+app.use(package_category)
 export default app

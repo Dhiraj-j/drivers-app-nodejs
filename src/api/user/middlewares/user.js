@@ -1,7 +1,7 @@
 
 import Joi from "joi";
 import { errorResponse } from "rapidjet"
-import { gender, user_types } from "../../../constants/user.js";
+import { gender, role } from "../../../constants/user.js";
 
 export const createRequest = async (req, res, next) => {
   const JoiSchema = Joi.object({
@@ -9,7 +9,7 @@ export const createRequest = async (req, res, next) => {
     "email": Joi.string().required(),
     "phone": Joi.string().required(),
     "password": Joi.string().min(6).required(),
-    "Role": Joi.string().valid(...Object.values(user_types)).optional(),
+    "RoleId": Joi.number().optional(),
   });
 
   const result = JoiSchema.validate(req.body);

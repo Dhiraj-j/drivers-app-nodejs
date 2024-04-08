@@ -9,8 +9,9 @@ import Otp from "./../../otp/models/otp.js";
 import { getDateTime, getDateTimeLater } from "../../../utils/date.js";
 import mailSender from "../../../utils/email.js";
 import { sendSMS, verifySMS } from "../../../utils/twilio.js";
-import { user_types } from "../../../constants/user.js";
+import { role } from "../../../constants/user.js";
 import { responseHandler } from "../../../utils/responseHandler.js";
+import Role from "../../role/models/role.js";
 
 
 export const create = async (req, res) => {
@@ -67,14 +68,15 @@ export const find = async (req, res) => {
         const query = req.query;
         const pagination = await getPagination(query.pagination);
         const whereClause = {};
-        if (query.role && Object.values(user_types).includes(query.role.toUpperCase())) {
-            whereClause.role = query.role.toUpperCase();
+        if (query.role && Object.values(role).includes(query.role.toUpperCase())) {
+            whereClause.name = query.role.toUpperCase();
         }
         const users = await User.findAndCountAll({
             offset: pagination.offset,
             limit: pagination.limit,
             attributes: { exclude: ["password"] },
-            where: whereClause
+            // where: whereClause
+            include: { model: Role, as: "role", where: whereClause }
         });
         const meta = await getMeta(pagination, users.count);
         return res.status(200).send({
