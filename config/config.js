@@ -10,5 +10,5 @@ export const service_id = process.env.serviceId;
 export const auth_token = process.env.authToken;
 export const account_s_id = process.env.accountSid;
 export const node_env = process.env.NODE_ENV;
-export const port = process.env.PORT || 8899;
+export const port = process.env.PORT || 4599;
 export const otp_expiry_time = 10;// in minutes
