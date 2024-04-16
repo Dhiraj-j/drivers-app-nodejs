@@ -1,3 +1,3 @@
-export default function (length) {
-
+export default function () {
+    return parseInt(Math.random(100) * 1000000)
 }

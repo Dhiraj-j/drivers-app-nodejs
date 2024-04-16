@@ -12,6 +12,7 @@ import { sendSMS, verifySMS } from "../../../utils/twilio.js";
 import { role } from "../../../constants/user.js";
 import { responseHandler } from "../../../utils/responseHandler.js";
 import Role from "../../role/models/role.js";
+import otpGenerator from "../services/otpGenerator.js";
 
 
 export const create = async (req, res) => {
@@ -228,7 +229,7 @@ export const forgetPassword = async (req, res) => {
             whereClause.email = body?.email;
         }
         console.log(whereClause)
-        const user = await User.findOne({ where: whereClause })
+        const user = await User.findOne({ where: whereClause, include: ["otp"] })
         if (!user) {
             return res.status(400).send({
                 status: "failure",
@@ -239,13 +240,22 @@ export const forgetPassword = async (req, res) => {
             });
         }
         const expiryTime = getDateTimeLater()
-        const createOtp = await Otp.create({ otp: 123123, expires: expiryTime, UserId: user.dataValues.id })
+        const generatedOTP = otpGenerator()
+
+        if (user.otp) {
+            const updateOTP = await Otp.update({ otp: generatedOTP, expires: expiryTime }, { where: { UserId: user.dataValues.id } })
+            console.log(updateOTP)
+        } else {
+
+            const createOtp = await Otp.create({ otp: generatedOTP, expires: expiryTime, UserId: user.dataValues.id })
+            console.log(createOtp.dataValues)
+        }
         switch (sendMethod) {
             case "EMAIL":
                 const sendOTP = await mailSender({
                     to: user.dataValues.email,
                     subject: "Regarding forget password",
-                    text: `Hey! ${user.dataValues.name} One Time Password (OTP) to reset your password is ${123123}`
+                    text: `Hey! ${user.dataValues.name} One Time Password (OTP) to reset your password is ${generatedOTP}`
                 })
                 break;
             case "PHONE":
@@ -290,7 +300,7 @@ export const resetPassword = async (req, res) => {
             whereClause.email = body.email;
         }
         const user = await User.findOne({ where: whereClause, include: ["otp"] })
-
+        console.log(user.dataValues)
         if (sendMethod === "EMAIL") {
             if (!user) {
                 return res.status(404).send({ status: "failure", status_code: 404, errors: "No user found", message: "No user found associated with email" })
@@ -298,8 +308,10 @@ export const resetPassword = async (req, res) => {
             if (!user.otp) {
                 return res.status(400).send({ status: "failure", status_code: 400, errors: "server error", message: "some internal server error occured" })
             }
-            const isMatched = body.otp === user.otp.otp;
+            console.log(user.otp)
+            const isMatched = body.otp === user.otp?.otp.toString();
             if (!isMatched) {
+
                 return res.status(400).send({
                     status: "failure",
                     status_code: 400,
