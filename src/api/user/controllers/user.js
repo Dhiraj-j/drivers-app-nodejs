@@ -38,13 +38,7 @@ export const create = async (req, res) => {
         }
         // create user
         const user = await User.create(body, { attributes: ["id"] });
-        // create vehicles 
-        if (body.vehicles && body.vehicles.length) {
-            const vehiclesArray = body.vehicles.map((item) => {
-                return { ...item, UserId: user.dataValues.id }
-            })
-            await Vehicle.bulkCreate(vehiclesArray)
-        }
+
         return res.status(200).send({
             status: "sucess",
             status_code: 200,
@@ -117,8 +111,8 @@ export const findOne = async (req, res) => {
 export const update = async (req, res) => {
     try {
         const { id } = req.params;
+        const body = req.body;
         const getUser = await User.findByPk(id);
-
         if (!getUser) {
             return res.status(404).send({
                 status: "failure", status_code: 404,
@@ -126,8 +120,23 @@ export const update = async (req, res) => {
                 details: "user id seems to be invalid"
             });
         }
+        // updating user
         const [rowCount, [user]] = await User.update(req.body, { where: { id }, returning: true });
-        return res.status(200).send({ status: "success", status_code: 200, message: "user updated!", data: user });
+
+        let allDetails = [user.dataValues.name, user.dataValues.email, user.dataValues.phone, user.dataValues.address, user.dataValues.gender, user.dataValues.dob,];
+        if (allDetails.every((item) => item !== null && item !== "")) {
+            user.is_profile_completed = true;
+            await user.save();
+        }
+
+        // checking for vehicle payload and creating 
+        if (body.vehicles && body.vehicles.length) {
+            const vehiclesArray = body.vehicles.map((item) => {
+                return { ...item, UserId: user.dataValues.id }
+            })
+            await Vehicle.bulkCreate(vehiclesArray)
+        }
+        return res.status(200).send({ status: "success", status_code: 200, message: "user updated!", data: user, request_body: req.body });
     } catch (error) {
         return res.status(500).send({
             status: "failure",

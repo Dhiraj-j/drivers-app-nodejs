@@ -42,6 +42,7 @@ export const updateRequest = async (req, res, next) => {
       "number": Joi.string().required(),
       "color": Joi.string().required(),
       "image": Joi.string().required(),
+      "vehicle_category": Joi.string().optional(),
     })).min(1).optional()
     // "user_type": Joi.string().required(),
   });

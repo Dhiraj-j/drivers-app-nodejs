@@ -9,15 +9,22 @@ const codeAndName = {
     502: "Bad Gateway",
     503: "Service Unavailable",
 };
-export function responseHandler({
-    status_code = 400,
-    status = status_code === 200 ? "success" : "failure",
-    message = null,
-    more_info = null,
-    errors = null,
-    data = null,
-    request_body = null
-}) {
+
+/**
+ * 
+ * @param {import("../types/responseHandler").responseHandler} payload 
+ * @returns {import("../types/responseHandler").responseHandler}
+ */
+export function responseHandler(payload) {
+    const {
+        status_code = 400,
+        status = status_code === 200 ? "success" : "failure",
+        message = null,
+        more_info = null,
+        errors = null,
+        data = null,
+        request_body = null
+    } = payload
     return {
         status: status,
         status_code: status_code,

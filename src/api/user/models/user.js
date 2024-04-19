@@ -56,6 +56,10 @@ const User = sequelize.define("User", {
     socket_id: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    is_profile_completed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 });
 

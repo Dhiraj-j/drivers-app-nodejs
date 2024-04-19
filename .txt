@@ -1,20 +1,16 @@
 
 admin role can't be sent on req body
 use phone auth using npm package
+### User and Role Module
 
-Updated user module
-need to pass RoleId while user registeration
+- RoleId => it is basically use type (customer,driver,admin) - to get ids call the get roles api ```/api/roles```
+- Create Update User api
+- ME api => it is used to get current user data (me) used to validate various things and store in a state
+- Get all users => The best practice to document api is to add all the apis insided coresponding belonging (User,Category ect) , the required apis to be taken in use;
+- isProfileComplete has been added
 
-Updated store module =>
-need to pass StoreTypeId while registeration
+### Vehicle Module
+- Created api to Add , Delete ,Update and Get My Vehicle 
 
-Created Constants for static data
-Designed Package and Package Category Schema
-Created Package and Package Category CRUD with validation
-Created Postman Collection for Package and Package Category
-
-Blocks & Need to Know fron Client
--> How shipping price will be calculated
--> Is there any payment gateway , we will be using like razorpay stripe or something
-
-On Founding any bugs -> please do let me know !
+Need to clarify ---
+- What values will be stored in diver category and Vehicle Collection - after I'll decide how to store this value;

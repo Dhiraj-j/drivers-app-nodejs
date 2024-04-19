@@ -3,7 +3,6 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../../../../database/index.js';
 
 const Vehicle = sequelize.define("Vehicle", {
-
     name: {
         type: DataTypes.STRING,
     },
@@ -15,11 +14,13 @@ const Vehicle = sequelize.define("Vehicle", {
     },
     number: {
         type: DataTypes.STRING,
+        unique: true
     },
     image: {
         type: DataTypes.STRING,
-    }
+    },
 });
+
 
 Vehicle.sync();
 

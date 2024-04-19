@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { create, find, update, destroy, findOne } from '../controllers/vehicle.js';
+import { create, find, update, destroy, findOne, findMyVehicles } from '../controllers/vehicle.js';
 const router = Router();
 
 // Create vehicle
@@ -10,6 +10,7 @@ router.post("/api/vehicles", [], create);
 router.get("/api/vehicles", [], find);
 
 // List Single vehicle
+router.get("/api/vehicles/my-vehicles", [], findMyVehicles);
 router.get("/api/vehicles/:id", [], findOne);
 
 // Update vehicles
