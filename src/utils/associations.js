@@ -11,6 +11,10 @@ import Store_type from './../api/store_type/models/store_type.js'
 import Store from './../api/store/models/store.js';
 import Package_category from "../api/package_category/models/package_category.js";
 import Package from "../api/package/models/package.js";
+import Menu_category from "../api/menu_category/models/menu_category.js";
+import Menu_item from "../api/menu_item/models/menu_item.js";
+import Cart from "../api/cart/models/cart.js";
+import CartItem from './../api/cart/models/cartItem.js';
 // Role and User 
 Role.hasMany(User, { foreignKey: "RoleId", as: "users" })
 User.belongsTo(Role, { foreignKey: "RoleId", as: "role" })
@@ -35,7 +39,24 @@ Store.belongsTo(Store_type, { foreignKey: "StoreTypeId", as: "store_type" })
 //package and category
 Package_category.hasMany(Package, { foreignKey: "PackageCategoryId", as: "packages" })
 Package.belongsTo(Package_category, { foreignKey: "PackageCategoryId", as: "package_category" })
-// syncing tables 
+
+//menu item and menu category
+
+Store.belongsToMany(Menu_category, { through: "Store_menu_category", as: "menu_categories" })
+Menu_category.belongsToMany(Store, { through: "Store_menu_category", as: "stores" })
+
+Menu_item.belongsTo(Menu_category, { as: "menu_category", foreignKey: "MenuCategoryId" })
+Menu_category.hasMany(Menu_item, { as: 'menu_items', foreignKey: "MenuCategoryId" })
+
+Store.hasMany(Menu_item, { as: "menu_items", foreignKey: "StoreId" })
+Menu_item.belongsTo(Store, { as: "store", foreignKey: "StoreId" })
+
+// user cart and menu items
+Cart.belongsToMany(Menu_item, { through: CartItem, foreignKey: "CartId", as: "items" })
+Menu_item.belongsToMany(Cart, { through: CartItem, foreignKey: "MenuItemId", as: "carts" })
+User.hasOne(Cart, { as: "cart", foreignKey: "UserId" })
+Cart.belongsTo(User, { as: "user", foreignKey: "UserId" })
+// syncing tables
 sequelize.sync({ alter: true }).then(() => {
     console.log("database initialized!")
 }).catch((error) => {

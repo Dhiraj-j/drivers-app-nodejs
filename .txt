@@ -1,16 +1,3 @@
 
 admin role can't be sent on req body
 use phone auth using npm package
-### User and Role Module
-
-- RoleId => it is basically use type (customer,driver,admin) - to get ids call the get roles api ```/api/roles```
-- Create Update User api
-- ME api => it is used to get current user data (me) used to validate various things and store in a state
-- Get all users => The best practice to document api is to add all the apis insided coresponding belonging (User,Category ect) , the required apis to be taken in use;
-- isProfileComplete has been added
-
-### Vehicle Module
-- Created api to Add , Delete ,Update and Get My Vehicle 
-
-Need to clarify ---
-- What values will be stored in diver category and Vehicle Collection - after I'll decide how to store this value;

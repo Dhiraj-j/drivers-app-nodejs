@@ -1,17 +1,26 @@
 
-import { getPagination, getMeta, errorResponse } from "rapidjet"
 import Store from "../models/store.js";
-import { request, response } from "express";
 import { responseHandler } from "../../../utils/responseHandler.js";
 import Store_type from "../../store_type/models/store_type.js";
+import sequelize from "../../../../database/index.js";
 
 export const create = async (req, res) => {
     try {
-        const store = await Store.create(req.body);
+        const body = req.body;
+        const store = await Store.create(body);
+        if (body.menu_category_ids && body.menu_category_ids.length) {
+            const store_menu_category_array = body.menu_category_ids.map((item) => {
+                return {
+                    StoreId: store.dataValues.id,
+                    MenuCategoryId: item
+                }
+            })
+            await sequelize.models.Store_menu_category.bulkCreate(store_menu_category_array)
+        }
         return res.status(200).send(responseHandler({
             data: store,
             message: "store created",
-            request_body: req.body,
+            request_body: body,
             status: "success",
             status_code: 200
         }));
@@ -41,7 +50,9 @@ export const find = async (req, res) => {
 export const findOne = async (req, res) => {
     try {
         const { id } = req.params;
-        const store = await Store.findByPk(id);
+        const store = await Store.findByPk(id, {
+            include: ["menu_categories"]
+        });
         if (!store) {
             return res.status(404).send(responseHandler({
                 status_code: 404,
@@ -59,8 +70,21 @@ export const findOne = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
+        const body = req.body;
         const { id } = req.params;
         const getStore = await Store.findByPk(id);
+
+        if (body.menu_category_ids && body.menu_category_ids.length) {
+            const store_menu_category_array = body.menu_category_ids.map((item) => {
+                return {
+                    StoreId: store.dataValues.id,
+                    MenuCategoryId: item
+                }
+            })
+            await sequelize.models.Store_menu_category.bulkCreate(store_menu_category_array, {
+                updateOnDuplicate: ["StoreId", "MenuCategoryId"]
+            })
+        }
 
         if (!getStore) {
             return res.status(404).send(responseHandler({
@@ -100,3 +124,39 @@ export const destroy = async (req, res) => {
         return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
     }
 };
+
+export const deleteMenuCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { menu_category_id } = req.params;
+        await sequelize.models.Store_menu_category.destroy({ where: { StoreId: id, MenuCategoryId: menu_category_id } })
+        return res.status(200).send(responseHandler({ status: 'success', status_code: 200, message: "menu category deleted" }))
+    } catch (error) {
+        return res.status(500).send(responseHandler({
+            status: 'failure', status_code: 500,
+            errors: error,
+            request_body: req.body,
+            message: error.message
+        }))
+    }
+}
+export const addMenuCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { menu_category_id } = req.params;
+        const store = await Store.findByPk(id)
+        console.log(store)
+        if (!store) {
+            return res.status(404).send(responseHandler({ status: 'failure', status_code: 404, message: "store not found" }))
+        }
+        await sequelize.models.Store_menu_category.create({ StoreId: id, MenuCategoryId: menu_category_id })
+        return res.status(200).send(responseHandler({ status: 'success', status_code: 200, message: "menu category deleted" }))
+    } catch (error) {
+        return res.status(500).send(responseHandler({
+            status: 'failure', status_code: 500,
+            errors: error,
+            request_body: req.body,
+            message: error.message
+        }))
+    }
+}

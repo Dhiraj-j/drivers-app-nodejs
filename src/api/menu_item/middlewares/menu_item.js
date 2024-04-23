@@ -1,18 +1,19 @@
 
 import Joi from "joi";
-import { errorResponse } from "rapidjet"
-import { responseHandler } from "../../../utils/responseHandler";
+import { responseHandler } from "../../../utils/responseHandler.js";
 
 export const createRequest = async (req, res, next) => {
   const JoiSchema = Joi.object({
     "name": Joi.string().required(),
     "description": Joi.string().optional(),
     "price": Joi.number().positive().required(),
-    "gallery": Joi.array().items(Joi.string).optional(),
+    "gallery": Joi.array().items(Joi.string()).optional(),
     "preferences": Joi.string().valid("VEG", "NON-VEG", "EGG").required(),
     "available": Joi.boolean().optional(),
     "thumbnail": Joi.string().optional(),
+    "MenuCategoryId": Joi.number().positive().required(),
     "StoreId": Joi.number().positive().required()
+
   });
 
   const result = JoiSchema.validate(req.body);
@@ -34,11 +35,13 @@ export const updateRequest = async (req, res, next) => {
     "name": Joi.string().optional(),
     "description": Joi.string().optional(),
     "price": Joi.number().positive().optional(),
-    "gallery": Joi.array().items(Joi.string).optional(),
+    "gallery": Joi.array().items(Joi.string()).optional(),
     "preferences": Joi.string().valid("VEG", "NON-VEG", "EGG").optional(),
     "available": Joi.boolean().optional(),
     "thumbnail": Joi.string().optional(),
+    "MenuCategoryId": Joi.number().positive().required(),
     "StoreId": Joi.number().positive().required()
+
   });
 
   const result = JoiSchema.validate(req.body);

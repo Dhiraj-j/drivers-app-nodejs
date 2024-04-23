@@ -8,18 +8,19 @@ export const create = async (req, res) => {
         return res.status(200).send(responseHandler({ status: "success", status_code: 200, message: "package_created", request_body: req.body, data: packages }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "success", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "success", status_code: 500, errors: error, message: error.message, request_body: req.body }));
     }
 };
 
 export const find = async (req, res) => {
     try {
         const packages = await Package.findAll({
+            include: ["package_category"]
         });
         return res.status(200).send(responseHandler({ status: "success", status_code: 200, data: packages, request_body: req.body }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, errors: error, message: error.message, request_body: req.body }));
     }
 };
 
@@ -37,7 +38,7 @@ export const findOne = async (req, res) => {
         return res.status(200).send(responseHandler({ data: packages, status: "success", status_code: 200 }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, errors: error, message: error.message, request_body: req.body }));
     }
 };
 
@@ -59,7 +60,7 @@ export const update = async (req, res) => {
         return res.status(200).send(responseHandler({ status: "success", status_code: 200, message: "package updated!", data: packages, request_body: req.body }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, errors: error, message: error.message, request_body: req.body }));
     }
 };
 
@@ -80,6 +81,6 @@ export const destroy = async (req, res) => {
         return res.status(200).send(responseHandler({ status: "success", status_code: 200, message: "package deleted!" }));
     } catch (error) {
         console.log(error);
-        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, message: "Internal Server Error", errors: error, message: error.message, request_body: req.body }));
+        return res.status(500).send(responseHandler({ status: "failure", status_code: 500, errors: error, message: error.message, request_body: req.body }));
     }
 };

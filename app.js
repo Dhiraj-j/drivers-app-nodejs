@@ -15,11 +15,16 @@ import role from './src/api/role/routes/role.js'
 import packge from "./src/api/package/routes/package.js"
 import package_category from "./src/api/package_category/routes/package_category.js"
 import vehicle from "./src/api/vehicle/routes/vehicle.js"
-
+import menu_category from "./src/api/menu_category/routes/menu_category.js"
+import menu_item from "./src/api/menu_item/routes/menu_item.js"
+import faq from "./src/api/faq/routes/faq.js"
+import privacy_policy from "./src/api/privacy_policy/routes/privacy_policy.js"
+import setting from './src/api/setting/routes/setting.js';
+import cart from './src/api/cart/routes/cart.js'
 import cors from 'cors'
 app.use(cors({
     origin: "http://localhost:5173",
-    methods: ['GET'], // Only allow GET requests
+    methods: ['*'], // Only allow GET requests
     allowedHeaders: ['Content-Type', 'Authorization', "authorization"], // Specify allowed headers
     maxAge: 600,
 }))
@@ -37,4 +42,10 @@ app.use(role)
 app.use(packge)
 app.use(package_category)
 app.use(vehicle)
+app.use(menu_category)
+app.use(menu_item)
+app.use(faq)
+app.use(privacy_policy)
+app.use(setting)
+app.use(cart)
 export default app

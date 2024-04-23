@@ -12,7 +12,8 @@ export const createRequest = async (req, res, next) => {
     "opening_time": Joi.string().pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).optional(),
     "closing_time": Joi.string().pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).optional(),
     "gallery": Joi.array().items(Joi.string()).optional(),
-    "StoreTypeId": Joi.number().positive().required()
+    "StoreTypeId": Joi.number().positive().required(),
+    "menu_category_ids": Joi.array().items(Joi.number().positive()).optional()
   });
 
   const result = JoiSchema.validate(req.body);
@@ -36,7 +37,8 @@ export const updateRequest = async (req, res, next) => {
     "opening_time": Joi.string().pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).optional(),
     "closing_time": Joi.string().pattern(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).optional(),
     "gallery": Joi.array().items(Joi.string()).optional(),
-    "StoreTypeId": Joi.number().positive().optional()
+    "StoreTypeId": Joi.number().positive().optional(),
+    "menu_category_ids": Joi.array().items(Joi.number().positive()).optional()
   });
 
   const result = JoiSchema.validate(req.body);

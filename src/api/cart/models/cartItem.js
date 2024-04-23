@@ -11,5 +11,4 @@ const CartItem = sequelize.define("CartItem", {
 });
 
 CartItem.sync();
-
 export default CartItem;
