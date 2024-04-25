@@ -38,6 +38,11 @@ export const find = async (req, res) => {
             whereClause.name = query?.store_type?.toLowerCase()
         }
         const stores = await Store.findAll({
+            attributes: {
+                include: [
+                    [sequelize.literal('(SELECT ROUND(AVG("rating"), 1) FROM "Store_reviews" WHERE "Store_reviews"."StoreId" = "Store"."id")'), "rating"],
+                ],
+            },
             include: [{ model: Store_type, as: "store_type", where: whereClause }]
         });
         return res.status(200).send(responseHandler({ status_code: 200, status: "success", data: stores, request_body: req.body }));
@@ -51,7 +56,12 @@ export const findOne = async (req, res) => {
     try {
         const { id } = req.params;
         const store = await Store.findByPk(id, {
-            include: ["menu_categories"]
+            include: ["menu_categories"],
+            attributes: {
+                include: [
+                    [sequelize.literal('(SELECT ROUND(AVG("rating"), 1) FROM "Store_reviews" WHERE "Store_reviews"."StoreId" = "Store"."id")'), "rating"],
+                ],
+            },
         });
         if (!store) {
             return res.status(404).send(responseHandler({
@@ -140,6 +150,7 @@ export const deleteMenuCategory = async (req, res) => {
         }))
     }
 }
+
 export const addMenuCategory = async (req, res) => {
     try {
         const { id } = req.params;

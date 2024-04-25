@@ -1,3 +1,27 @@
+Work Update
 
-admin role can't be sent on req body
-use phone auth using npm package
+Menu Item
+- Updated schema , added new fields for cooking time , strike price, calories , grams proteins and fats
+- Changes on api and schema validation according to above changes
+
+Store Rating and Reviews
+- Designed Schema , Created APIs , Schema validation
+
+Menu Item Rating and Reviews
+- Designed Schema , Created APIs , Schema validation
+
+Store & Menu Items
+- Implemented Logic to calculate ratings 
+
+Cart 
+- Created required APIs for carts
+- Created Schema validation
+
+all the above updates are well documented on postman collection
+
+Need clarification
+- What exactly Select Category Screen (while driver registration) is
+- How package's and shifting's amount will be calculated 
+- How delivery charges will be calculated for food orders
+- How Orders will be splited (New Order Screen) any specific way or randomly
+ 

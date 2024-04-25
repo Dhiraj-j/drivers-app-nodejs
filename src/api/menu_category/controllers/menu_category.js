@@ -1,6 +1,7 @@
 
 import Menu_category from "../models/menu_category.js";
 import { responseHandler } from "../../../utils/responseHandler.js";
+import Store from "../../store/models/store.js";
 
 export const create = async (req, res) => {
     try {
@@ -15,6 +16,17 @@ export const create = async (req, res) => {
 export const find = async (req, res) => {
     try {
         const menu_categories = await Menu_category.findAll();
+        return res.status(200).send(responseHandler({ status: 'success', status_code: 200, data: menu_categories }));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(responseHandler({ status: 'failure', status_code: 500, message: error.message, request_body: req.body, errors: error }));
+    }
+};
+
+export const getStoreMenuCategories = async (req, res) => {
+    try {
+        const { store_id } = req.params;
+        const menu_categories = await Menu_category.findAll({ include: [{ model: Store, as: "store", where: { id: store_id } }] });
         return res.status(200).send(responseHandler({ status: 'success', status_code: 200, data: menu_categories }));
     } catch (error) {
         console.log(error);

@@ -15,6 +15,8 @@ import Menu_category from "../api/menu_category/models/menu_category.js";
 import Menu_item from "../api/menu_item/models/menu_item.js";
 import Cart from "../api/cart/models/cart.js";
 import CartItem from './../api/cart/models/cartItem.js';
+import Store_review from "../api/store_review/models/store_review.js";
+import Menu_item_review from "../api/menu_item_review/models/menu_item_review.js";
 // Role and User 
 Role.hasMany(User, { foreignKey: "RoleId", as: "users" })
 User.belongsTo(Role, { foreignKey: "RoleId", as: "role" })
@@ -56,6 +58,24 @@ Cart.belongsToMany(Menu_item, { through: CartItem, foreignKey: "CartId", as: "it
 Menu_item.belongsToMany(Cart, { through: CartItem, foreignKey: "MenuItemId", as: "carts" })
 User.hasOne(Cart, { as: "cart", foreignKey: "UserId" })
 Cart.belongsTo(User, { as: "user", foreignKey: "UserId" })
+
+// review and rating
+Store.hasMany(Store_review, { foreignKey: "StoreId", as: "review" })
+Store_review.belongsTo(Store, { foreignKey: "StoreId", as: "store" })
+
+User.hasMany(Store_review, { foreignKey: "UserId", as: "reviews" })
+Store_review.belongsTo(User, { foreignKey: "UserId", as: "user" })
+
+//menu items reviews
+
+Menu_item.hasMany(Menu_item_review, { foreignKey: "MenuItemId", as: "reviews" });
+Menu_item_review.belongsTo(Menu_item, { foreignKey: "MenuItemId", as: "menu_item" })
+
+User.hasMany(Menu_item_review, { foreignKey: "UserId", as: "menu_item_reviews" })
+Menu_item_review.belongsTo(User, { foreignKey: "UserId", as: "user" })
+
+
+
 // syncing tables
 sequelize.sync({ alter: true }).then(() => {
     console.log("database initialized!")

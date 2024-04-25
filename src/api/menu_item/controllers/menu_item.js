@@ -77,9 +77,7 @@ export const destroy = async (req, res) => {
 export const findStoresMenuItems = async (req, res) => {
     try {
         const { store_id } = req.params;
-        // const store = await Store.findByPk(store_id, {
-        //     include: [{ model: Menu_category, as: "menu_categories", include: 'menu_items' }]
-        // })
+
         const menu_items = await Menu_item.findAll({
             where: { StoreId: store_id },
             include: [{
@@ -87,6 +85,11 @@ export const findStoresMenuItems = async (req, res) => {
                 as: "menu_category",
                 attributes: ["name", "id"],
             }],
+            attributes: {
+                include: [
+                    [sequelize.literal('(SELECT ROUND(AVG("rating"), 1) FROM "Menu_item_reviews" WHERE "Menu_item_reviews"."MenuItemId" = "Menu_item"."id")'), "rating"],
+                ],
+            },
         });
 
         const groupedMenuItems = {};
@@ -104,6 +107,39 @@ export const findStoresMenuItems = async (req, res) => {
             status: 'success',
             status_code: 200,
             data: groupedMenuItems,
+            request_body: req.body,
+            message: "menu item created",
+        }))
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(responseHandler({ status: 'failure', status_code: 500, request_body: req.body, message: error.message, errors: error }))
+    }
+};
+
+export const findStoresMenuCategoryItems = async (req, res) => {
+    try {
+        const { store_id, category_id } = req.params;
+
+        const menu_items = await Menu_item.findAll({
+            where: { StoreId: store_id, MenuCategoryId: category_id },
+            include: [{
+                model: Menu_category,
+                as: "menu_category",
+                attributes: ["name", "id"],
+            }],
+            attributes: {
+                exclude: ["MenuCategoryId", "StoreId"],
+                include: [
+                    [sequelize.literal('(SELECT ROUND(AVG("rating"), 1) FROM "Menu_item_reviews" WHERE "Menu_item_reviews"."MenuItemId" = "Menu_item"."id")'), "rating"],
+                ],
+            },
+
+        });
+
+        return res.status(200).send(responseHandler({
+            status: 'success',
+            status_code: 200,
+            data: menu_items,
             request_body: req.body,
             message: "menu item created",
         }))

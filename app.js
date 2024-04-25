@@ -21,6 +21,9 @@ import faq from "./src/api/faq/routes/faq.js"
 import privacy_policy from "./src/api/privacy_policy/routes/privacy_policy.js"
 import setting from './src/api/setting/routes/setting.js';
 import cart from './src/api/cart/routes/cart.js'
+import store_review from "./src/api/store_review/routes/store_review.js"
+import menu_item_review from "./src/api/menu_item_review/routes/menu_item_review.js"
+
 import cors from 'cors'
 app.use(cors({
     origin: "http://localhost:5173",
@@ -48,4 +51,6 @@ app.use(faq)
 app.use(privacy_policy)
 app.use(setting)
 app.use(cart)
+app.use(store_review)
+app.use(menu_item_review)
 export default app
