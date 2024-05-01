@@ -19,6 +19,9 @@ const Vehicle = sequelize.define("Vehicle", {
     image: {
         type: DataTypes.STRING,
     },
+    // vehicle_category: {
+    //     type: DataTypes.ENUM("")
+    // }
 });
 
 

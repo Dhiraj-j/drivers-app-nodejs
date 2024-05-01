@@ -128,7 +128,7 @@ export const findStoresMenuCategoryItems = async (req, res) => {
                 attributes: ["name", "id"],
             }],
             attributes: {
-                exclude: ["MenuCategoryId", "StoreId"],
+                // exclude: ["MenuCategoryId", "StoreId"],
                 include: [
                     [sequelize.literal('(SELECT ROUND(AVG("rating"), 1) FROM "Menu_item_reviews" WHERE "Menu_item_reviews"."MenuItemId" = "Menu_item"."id")'), "rating"],
                 ],

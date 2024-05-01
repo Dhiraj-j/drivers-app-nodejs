@@ -26,7 +26,13 @@ export const find = async (req, res) => {
 export const getStoreMenuCategories = async (req, res) => {
     try {
         const { store_id } = req.params;
-        const menu_categories = await Menu_category.findAll({ include: [{ model: Store, as: "store", where: { id: store_id } }] });
+        const menu_categories = await Menu_category.findAll({
+
+            include: [{
+                model: Store, as: "stores", where: { id: store_id },
+                attributes: []
+            }]
+        });
         return res.status(200).send(responseHandler({ status: 'success', status_code: 200, data: menu_categories }));
     } catch (error) {
         console.log(error);
