@@ -11,7 +11,8 @@ router.get("/api/menu-items", [], find);
 router.get("/api/menu-items/:id", [], findOne);
 
 router.get("/api/menu-items/stores/:store_id", [], findStoresMenuItems);
-router.get("/api/menu-items/stores/:store_id/category/:category_id", [], findStoresMenuCategoryItems);
+
+router.get("/api/menu-items/category/:category_id", [], findStoresMenuCategoryItems);
 
 router.put("/api/menu-items/:id", [updateRequest], update);
 

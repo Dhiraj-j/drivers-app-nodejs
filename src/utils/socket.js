@@ -5,8 +5,10 @@ import User from "../api/user/models/user.js";
 import Chat from "../api/chat/models/chat.js";
 import sequelize from "../../database/index.js";
 import Message from "../api/message/models/message.js";
+import { jwt_secret } from "../../config/config.js";
 const cleint_url = "http://localhost:5173"
 const chatsObject = {};
+
 export default function SocketInit(server) {
 
     const io = new Server(server, {
@@ -23,7 +25,7 @@ export default function SocketInit(server) {
         socket.on("user-connected", (id) => {
             users[id] = socket.id
         })
-        const token = jwt.verify(jwtTOken, 'secret123');
+        const token = jwt.verify(jwtTOken, jwt_secret);
         if (!token) {
             socket.disconnect(true)
         }
@@ -34,14 +36,12 @@ export default function SocketInit(server) {
         }
 
         socket.on("message", async ({ chat_id, message }) => {
-            console.log({ chat_id: 2, message });
             const chat = await Chat.findByPk(chat_id, { include: ["users"] })
-            const senderId = getSenderId(chat_id, socket.id, chatsObject);
-            const createMessage = await Message.create({ UserId: senderId, text: message })
             chatsObject[chat_id] = chat.dataValues
-            console.log(chatsObject)
+            const senderId = getSenderId(chat_id, socket.id, chatsObject);
+            const createMessage = await Message.create({ UserId: senderId, ChatId: chat.id, text: message })
             const sendTo = getSendToSocketId(chat_id, socket.id, chatsObject)
-            socket.to(sendTo).emit("receive-message", message);
+            socket.to(sendTo).emit("receive-message", { message: createMessage });
         });
 
 

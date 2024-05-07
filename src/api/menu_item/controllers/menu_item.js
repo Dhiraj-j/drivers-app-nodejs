@@ -118,17 +118,16 @@ export const findStoresMenuItems = async (req, res) => {
 
 export const findStoresMenuCategoryItems = async (req, res) => {
     try {
-        const { store_id, category_id } = req.params;
+        const { category_id } = req.params;
 
         const menu_items = await Menu_item.findAll({
-            where: { StoreId: store_id, MenuCategoryId: category_id },
+            where: { MenuCategoryId: category_id },
             include: [{
                 model: Menu_category,
                 as: "menu_category",
                 attributes: ["name", "id"],
             }],
             attributes: {
-                // exclude: ["MenuCategoryId", "StoreId"],
                 include: [
                     [sequelize.literal('(SELECT ROUND(AVG("rating"), 1) FROM "Menu_item_reviews" WHERE "Menu_item_reviews"."MenuItemId" = "Menu_item"."id")'), "rating"],
                 ],
@@ -141,7 +140,7 @@ export const findStoresMenuCategoryItems = async (req, res) => {
             status_code: 200,
             data: menu_items,
             request_body: req.body,
-            message: "menu item created",
+            message: "menu items found!",
         }))
     } catch (error) {
         console.log(error);

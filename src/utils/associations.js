@@ -44,14 +44,16 @@ Package.belongsTo(Package_category, { foreignKey: "PackageCategoryId", as: "pack
 
 //menu item and menu category
 
-Store.belongsToMany(Menu_category, { through: "Store_menu_category", as: "menu_categories" })
-Menu_category.belongsToMany(Store, { through: "Store_menu_category", as: "stores" })
+// Store.belongsToMany(Menu_category, { through: "Store_menu_category", as: "menu_categories" })
+// Menu_category.belongsToMany(Store, { through: "Store_menu_category", as: "stores" })
+Store.hasMany(Menu_category, { foreignKey: "StoreId", as: "menu_categories" })
+Menu_category.belongsTo(Store, { foreignKey: "StoreId", as: "stores" })
 
 Menu_item.belongsTo(Menu_category, { as: "menu_category", foreignKey: "MenuCategoryId" })
 Menu_category.hasMany(Menu_item, { as: 'menu_items', foreignKey: "MenuCategoryId" })
 
-Store.hasMany(Menu_item, { as: "menu_items", foreignKey: "StoreId" })
-Menu_item.belongsTo(Store, { as: "store", foreignKey: "StoreId" })
+// Store.hasMany(Menu_item, { as: "menu_items", foreignKey: "StoreId" })
+// Menu_item.belongsTo(Store, { as: "store", foreignKey: "StoreId" })
 
 // user cart and menu items
 Cart.belongsToMany(Menu_item, { through: CartItem, foreignKey: "CartId", as: "items" })

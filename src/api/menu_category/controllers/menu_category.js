@@ -27,7 +27,6 @@ export const getStoreMenuCategories = async (req, res) => {
     try {
         const { store_id } = req.params;
         const menu_categories = await Menu_category.findAll({
-
             include: [{
                 model: Store, as: "stores", where: { id: store_id },
                 attributes: []

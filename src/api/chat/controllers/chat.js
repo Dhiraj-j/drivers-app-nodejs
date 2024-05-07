@@ -48,7 +48,6 @@ export const findOne = async (req, res) => {
 };
 export const getUsersChat = async (req, res) => {
     try {
-        const { id } = req.params;
         const token = verify(req);
         if (token.error) {
             return res.status(401).send(errorResponse({ status: 401, message: "Unauthorized!" }))
@@ -59,7 +58,7 @@ export const getUsersChat = async (req, res) => {
             delete chat.users
             delete chat.UserChat
             if (user) {
-                return { ...chat, name: user.name };
+                return { ...chat, name: user.name, profile: user.profile_image };
             } else {
                 return chat;
             }
