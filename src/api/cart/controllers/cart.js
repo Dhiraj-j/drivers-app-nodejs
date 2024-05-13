@@ -20,6 +20,7 @@ export const addToCart = async (req, res) => {
         request_body: req.body
       }))
     }
+    console.log(token.id)
     let findCart = await Cart.findOne({ where: { UserId: token.id } });
     if (findCart === null) {
       findCart = await Cart.create({ total_price: 0, UserId: token.id });
@@ -148,7 +149,6 @@ export const increaseQuantity = async (req, res) => {
 
     let findCart = await Cart.findOne({ where: { UserId: token.id }, include: [{ model: Menu_item, as: "items", where: { id: menu_item_id } }] });
 
-
     if (findCart && findCart.items.length) {
       let itemsPrice = findCart.items[0].price
       await CartItem.increment({ quantity: 1 }, { where: { CartId: findCart.id, MenuItemId: menu_item_id } })
@@ -173,7 +173,7 @@ export const userCart = async (req, res) => {
         status_code: 401
       }))
     }
-    let cart = await Cart.findOne({ UserId: token.id, include: ["items"] });
+    let cart = await Cart.findOne({ where: { UserId: token.id, }, include: ["items"] });
     if (!cart) {
       cart = await Cart.create({ totalPrice: 0, UserId: token.id });
     }

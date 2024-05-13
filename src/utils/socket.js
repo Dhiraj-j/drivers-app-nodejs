@@ -33,6 +33,7 @@ export default function SocketInit(server) {
         if (user) {
             user.socket_id = socket.id;
             await user.save();
+            console.log("user-", user.name, "connected")
         }
 
         socket.on("message", async ({ chat_id, message }) => {
@@ -42,6 +43,7 @@ export default function SocketInit(server) {
             const createMessage = await Message.create({ UserId: senderId, ChatId: chat.id, text: message })
             const sendTo = getSendToSocketId(chat_id, socket.id, chatsObject)
             socket.to(sendTo).emit("receive-message", { message: createMessage });
+            console.log("message sent")
         });
 
 
@@ -54,6 +56,7 @@ export default function SocketInit(server) {
             const userChat = await sequelize.models.UserChat.bulkCreate([token.id, user.dataValues.id].map((item) => {
                 return { UserId: item, ChatId: chat.dataValues.id }
             }))
+            console.log(userChat)
             socket.emit("new-chat-created", { chat_id: chat.dataValues.id, message: "successfully created new chat" })
         })
     })

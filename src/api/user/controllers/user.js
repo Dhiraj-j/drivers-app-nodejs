@@ -13,6 +13,7 @@ import { role } from "../../../constants/user.js";
 import { responseHandler } from "../../../utils/responseHandler.js";
 import Role from "../../role/models/role.js";
 import otpGenerator from "../services/otpGenerator.js";
+import getRole from "../../../utils/getRole.js";
 
 
 export const create = async (req, res) => {
@@ -355,3 +356,80 @@ export const resetPassword = async (req, res) => {
         });
     }
 }
+
+export const search = async (req, res) => {
+    try {
+        const query = req.params.query;
+        const pagination = await getPagination(query.pagination);
+
+        const users = await User.findAll({
+            offset: pagination.offset,
+            limit: pagination.limit,
+            attributes: { exclude: ["password"] },
+            where: {
+                [Op.or]: [
+                    { name: { [Op.iLike]: `%${query}%` } },
+                    { phone: { [Op.iLike]: `%${query}%` } },
+                    { email: { [Op.iLike]: `%${query}%` } },
+                ]
+            },
+        });
+        return res.status(200).send({
+            status: "success", status_code: 200,
+            data: users,
+            request_body: req.body
+        });
+    } catch (error) {
+        return res.status(500).send({
+            status: "failure",
+            status_code: 500,
+            message: error.message,
+            errors: error,
+            request_body: req.body
+        });
+    }
+};
+
+export const createCutomer = async (req, res) => {
+    try {
+        const body = req.body;
+        const { email, phone } = body;
+        const isUserExists = await User.findOne({
+            where: {
+                [Op.or]: [{ email: email }, { phone: phone }]
+            }
+        })
+        if (isUserExists) {
+            const matching_value = Object.entries(isUserExists.dataValues).find(
+                ([key, value]) => value === email || value === phone
+            );
+            return res.status(409).send({
+                status_code: 409,
+                status: "Failure",
+                message: `User Already Exists with the ${matching_value[0]} ${matching_value[1]}`,
+                errors: `User Already Exists with the ${matching_value[0]} ${matching_value[1]}`,
+                request_body: req.body
+            })
+        }
+        const customer_role_id = await getRole("customer");
+        // create user
+        const user = await User.create({ ...body, RoleId: customer_role_id }, { attributes: ["id"] });
+
+        return res.status(200).send({
+            status: "sucess",
+            status_code: 200,
+            message: "User Created",
+            more_info: null,
+            data: user,
+            request_body: req.body
+        });
+    } catch (error) {
+        return res.status(500).send({
+            status: "failure",
+            status_code: 500,
+            message: error.message,
+            errors: error,
+            request_body: req.body
+        });
+    }
+};
