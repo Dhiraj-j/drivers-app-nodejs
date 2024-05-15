@@ -155,7 +155,7 @@ export const increaseQuantity = async (req, res) => {
       await findCart.increment({ total_price: itemsPrice })
     }
     const updatedCart = await Cart.findOne({ where: { UserId: token.id }, include: ["items"] })
-    return res.status(200).send(responseHandler({ status: 'success', status_code: 200, message: "Item's quantity has been decreased", data: updatedCart }));
+    return res.status(200).send(responseHandler({ status: 'success', status_code: 200, message: "Item's quantity has been increased", data: updatedCart }));
   } catch (error) {
     console.log(error);
     return res.status(500).send(responseHandler({ status: 'failure', status_code: 500, errors: error, message: error.message }))
